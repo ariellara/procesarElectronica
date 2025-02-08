@@ -8,7 +8,7 @@ function guardarFactura($datos, $conn): array
 
     try {
         $id_tiquet = $datos["id_tiquet"];
-        $fecha_tiquet = $datos["fecha_tiquet"];
+        $fecha_tiquet =  '$datos["fecha_tiquet"]';
         $hora_tiquet = $datos["horatiquet"];
         $total = (float) $datos["total"];
         $bi = (float) $datos["bi"];
@@ -27,9 +27,7 @@ function guardarFactura($datos, $conn): array
             return $respuesta;
         }
 
-        mysqli_stmt_bind_param($stmt, "iissdssss", $id_tiquet, $fecha_tiquet, $hora_tiquet, $cod_cliente, $caja, $total, $id_modo_pago, $bi, $id_camarero);
-
-        $ejecucion = mysqli_stmt_execute($stmt);
+        mysqli_stmt_bind_param($stmt, "iissdssss", $id_tiquet, $fecha_tiquet, $hora_tiquet, $cod_cliente, $caja, $total, $id_modo_pago, $bi, $id_camarero);   $ejecucion = mysqli_stmt_execute($stmt);
 
         if ($ejecucion) {
             $respuesta["estado"] = true;
