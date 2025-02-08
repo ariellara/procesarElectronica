@@ -232,16 +232,19 @@ function enviarFacturaElectronica($conn, $numeroFactura, $cmd): array
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $resfac = curl_exec($ch);//Envio de la factura 
 
-    
-
         $resultado = json_decode($resfac, true);
+        if($resultado == null)
+        {
+            $respuesta['mensaje'] = "No hay conexión a la pasarealla";
+            $respuesta['estado'] = false;
 
+        }
+        actualizarFactura($conn, $num_factura, $num_ticket, $control_actualizar);
+        $resultadosFin = insertarResultados($conn, $numero_identificacion, $num_factura, $num_ticket, $resultado);
+        $respuesta["mensaje"] = $resultadosFin["mensaje"];
+        $respuesta["estado"] = $resultadosFin["estado"];
 
-
-
-
-
-
+  
     } catch (Exception $e) {
         $respuesta["mensaje"] = $e->getMessage();
         $respuesta["estado"] = false;
