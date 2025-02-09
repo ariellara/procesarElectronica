@@ -331,6 +331,7 @@ function insertarResultadosBD($conn, $num_factura, $num_ticket, $numero_identifi
         )";
         if (mysqli_query($conn, $sql)) {
             $respuesta["estado"] = true;
+            $respuesta["mensaje"] = $mensaje;
         } else {
             
             $respuesta["estado"] = false;
