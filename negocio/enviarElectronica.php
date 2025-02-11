@@ -224,6 +224,11 @@ function enviarFacturaElectronica($conn, $numeroFactura, $cmd): array
         );
        
         json_encode($factura);
+      
+
+file_put_contents("json.txt", json_encode($factura));
+
+
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -235,12 +240,12 @@ function enviarFacturaElectronica($conn, $numeroFactura, $cmd): array
         $resultado = json_decode($resfac, true);
         if($resultado == null)
         {
-            $respuesta['mensaje'] = "No hay conexión a la pasarealla";
+            $respuesta['mensaje'] = "No hay conexión a la pasarella";
             $respuesta['estado'] = false;
 
         }
         actualizarFactura($conn, $num_factura, $num_ticket, $control_actualizar);
-        $resultadosFin = insertarResultados($conn, $numero_identificacion, $num_factura, $num_ticket, $resultado);
+        $resultadosFin = insertarResultados($cmd, $conn, $numero_identificacion, $num_factura, $num_ticket, $resultado);
         $respuesta["mensaje"] = $resultadosFin["mensaje"];
         $respuesta["estado"] = $resultadosFin["estado"];
 

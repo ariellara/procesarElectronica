@@ -254,10 +254,10 @@ function actualizarFactura($conn, $num_factura, $num_ticket, $control_actualizar
         mysqli_query($conn, $update);
     }
 }
-function insertarResultados($conn, $numero_identificacion, $num_factura, $num_ticket, $resultado)
+function insertarResultados($cmd, $conn, $numero_identificacion, $num_factura, $num_ticket, $resultado)
 {
     $respuesta = array();
-    
+
     $estado = $resultado["rerror"];
     $cufe = "";
     $rtaxxadocument = "";
@@ -265,7 +265,7 @@ function insertarResultados($conn, $numero_identificacion, $num_factura, $num_ti
     $fecha_actual = date('Y-m-d H:i:s');
     if ($estado != 0) {
         $mensaje = mysqli_real_escape_string($conn, $resultado["smessage"]);
-        $insertar = insertarResultadosBD($conn, $num_factura, $num_ticket, $numero_identificacion, $estado, $mensaje, $cufe, $rtaxxadocument, $fecha_actual);
+        $insertar = insertarResultadosBD($cmd, $conn, $num_factura, $num_ticket, $numero_identificacion, $estado, $mensaje, $cufe, $rtaxxadocument, $fecha_actual);
         return $insertar;
     }
 
@@ -301,14 +301,16 @@ function insertarResultados($conn, $numero_identificacion, $num_factura, $num_ti
 
     }
 
-    $insertar = insertarResultadosBD($conn, $num_factura, $num_ticket, $numero_identificacion, $estado, $mensaje, $cufe, $rtaxxadocument, $fecha_actual);
+    $insertar = insertarResultadosBD($cmd, $conn, $num_factura, $num_ticket, $numero_identificacion, $estado, $mensaje, $cufe, $rtaxxadocument, $fecha_actual);
     return $insertar;
 }
 
-function insertarResultadosBD($conn, $num_factura, $num_ticket, $numero_identificacion, $estado, $mensaje, $cufe, $rtaxxadocument, $fecha_actual)
+function insertarResultadosBD($cmd, $conn, $num_factura, $num_ticket, $numero_identificacion, $estado, $mensaje, $cufe, $rtaxxadocument, $fecha_actual)
 {
+    $validarFactura = validarFactura($cmd, $num_ticket);
     try {
-        $sql = "INSERT INTO resultados (
+        if (!$validarFactura) {
+            $sql = "INSERT INTO resultados (
         num_factura,
         ticket,
         cliente,
@@ -329,20 +331,43 @@ function insertarResultadosBD($conn, $num_factura, $num_ticket, $numero_identifi
         '$rtaxxadocument',
         '$fecha_actual'
         )";
+        }
+        else{
+            $sql = "UPDATE resultados SET estado = '$estado' , cufe = '$cufe', fecha_hora = '$fecha_actual' WHERE ticket = '$num_ticket'";
+        }
+
         if (mysqli_query($conn, $sql)) {
             $respuesta["estado"] = true;
             $respuesta["mensaje"] = $mensaje;
         } else {
-            
+
             $respuesta["estado"] = false;
 
         }
     } catch (PDOException $e) {
-        $respuesta["estado"] = true;
+        $respuesta["estado"] = false;
         $respuesta["mensaje"] = $e->getMessage();
     }
     return $respuesta;
 
+}
+
+function validarFactura($cmd, $num_ticket): bool
+{
+    try {
+        $sql = "SELECT ticket FROM resultados WHERE ticket = :ticket";
+        $stmt = $cmd->prepare($sql);
+        $stmt->bindParam(':ticket', $num_ticket, PDO::PARAM_STR);
+        $stmt->execute();
+
+        if ($stmt->fetch()) {
+            return true;
+        } else {
+            return false;
+        }
+    } catch (PDOException $e) {
+        return false;
+    }
 }
 
 

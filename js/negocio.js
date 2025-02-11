@@ -1,5 +1,6 @@
 function enviarFactura(factura) {
-    $("#enviando").show();
+    
+    document.getElementById("loadingOverlay").style.display = "flex";
     const data = new FormData();
     data.append("factura", JSON.stringify(factura));
 
@@ -12,7 +13,7 @@ function enviarFactura(factura) {
             
             if (data.success) {
                 alert("Factura enviada correctamente");
-                $("#enviando").hide();
+                window.location.href ="../vistas/monitor.php";
             } else {
                 alert("Hubo un problema al enviar la factura");
             }
