@@ -58,7 +58,7 @@ function obtenerJtax($objs_detalle)
 
 }
 
-function obtenerCliente($cmd ,$num_ticket)
+function obtenerCliente($cmd, $num_ticket)
 {
     $sql = "SELECT clientes.identificacion 
                   ,clientes.razon_social AS nombre,
@@ -78,9 +78,9 @@ function obtenerCliente($cmd ,$num_ticket)
                   clientes.tributo as tributo,
                   clientes.tipoIdentificacion as tipoI
         FROM clientes INNER JOIN facturas ON(facturas.cod_cliente=clientes.cod_cliente) WHERE facturas.num_ticket= '$num_ticket' LIMIT 1";
-        $rs = $cmd->query($sql);
-        $obj_factura = $rs->fetch();
-        return $obj_factura;
+    $rs = $cmd->query($sql);
+    $obj_factura = $rs->fetch();
+    return $obj_factura;
 
 }
 
@@ -227,14 +227,14 @@ function retornaDatosCliente($cmd, $res_fiscal, $regimen, $tributo)
 }
 function devolverUltimaFactura($conn)
 {
-   $sql = "select n_comprobante_actual from tb_factura_electronica";
-   if ($result = mysqli_query($conn, $sql)) {
+    $sql = "select n_comprobante_actual from tb_factura_electronica";
+    if ($result = mysqli_query($conn, $sql)) {
 
-      while ($row = mysqli_fetch_row($result)) {
-         $consecutivo_factura = $row[0];
-      }
-   }
-   return $consecutivo_factura;
+        while ($row = mysqli_fetch_row($result)) {
+            $consecutivo_factura = $row[0];
+        }
+    }
+    return $consecutivo_factura;
 }
 function validarIncremento($cmd, $num_t)
 {
@@ -244,4 +244,147 @@ function validarIncremento($cmd, $num_t)
     return $obj_estado['numero_fac_electronica'];
 
 }
+
+function actualizarFactura($conn, $num_factura, $num_ticket, $control_actualizar)
+{
+    if ($control_actualizar == 1) {
+        $update = "UPDATE tb_factura_electronica set n_comprobante_actual = '$num_factura'";
+        mysqli_query($conn, $update);
+        $update = "UPDATE facturas set numero_fac_electronica = '$num_factura' where num_ticket = '$num_ticket'";
+        mysqli_query($conn, $update);
+    }
+}
+function insertarResultados($cmd, $conn, $numero_identificacion, $num_factura, $num_ticket, $resultado)
+{
+    $respuesta = array();
+
+    $estado = $resultado["rerror"];
+    $cufe = "";
+    $rtaxxadocument = "";
+    date_default_timezone_set('America/Bogota');
+    $fecha_actual = date('Y-m-d H:i:s');
+    if($estado == 0)
+    {
+        $mensaje = "Documento Enviado a la Dian correctamente";
+        $cufe = $resultado["jret"]["scufe"];
+        $insertar = insertarResultadosBD($cmd, $conn, $num_factura, $num_ticket, $numero_identificacion, $estado, $mensaje, $cufe, $rtaxxadocument, $fecha_actual);
+        return $insertar;
+
+    }
+    if($estado ==2)
+    {
+        $mensaje = mysqli_real_escape_string($conn, $resultado["smessage"]["string"]);
+        $insertar = insertarResultadosBD($cmd, $conn, $num_factura, $num_ticket, $numero_identificacion, $estado, $mensaje, $cufe, $rtaxxadocument, $fecha_actual);
+        return $insertar;
+
+    }
+    if ($estado != 0) {
+        $mensaje = mysqli_real_escape_string($conn, $resultado["smessage"]);
+        $insertar = insertarResultadosBD($cmd, $conn, $num_factura, $num_ticket, $numero_identificacion, $estado, $mensaje, $cufe, $rtaxxadocument, $fecha_actual);
+        return $insertar;
+    }
+
+
+    if ($estado == 3344) {
+
+        $mensajes = $resultado->smessage->string->{0};
+    }
+
+    if ($estado == 1) {
+
+        $mensajes = $resultado->smessage->string->{0};
+
+    }
+
+    if ($estado == 0) {
+        $cufe = $resultado->jret->scufe;
+        $rtaxxadocument = $resultado->jret->rtaxxadocument;
+        $mensajes = "Documento enviado a la DIAN Exitosamente";
+
+    }
+    if ($estado == 0) {
+        $sql = "UPDATE facturas set estado_final = 1 , cufe = '$cufe' where num_ticket = '$num_ticket'";
+        mysqli_query($conn, $sql);
+
+    }
+    if ($estado > 10) {
+        $mensajes = $mensaje = $resultado->smessage;
+
+    }
+    if ($estado > 1 and $estado < 10) {
+        $mensajes = $resultado->smessage->string;
+
+    }
+
+    $insertar = insertarResultadosBD($cmd, $conn, $num_factura, $num_ticket, $numero_identificacion, $estado, $mensaje, $cufe, $rtaxxadocument, $fecha_actual);
+    return $insertar;
+}
+
+function insertarResultadosBD($cmd, $conn, $num_factura, $num_ticket, $numero_identificacion, $estado, $mensaje, $cufe, $rtaxxadocument, $fecha_actual)
+{
+    $validarFactura = validarFactura($cmd, $num_ticket);
+    try {
+        if (!$validarFactura) {
+            $sql = "INSERT INTO resultados (
+        num_factura,
+        ticket,
+        cliente,
+        estado,
+        mensaje,
+        cufe,
+        rtaxxadocument,
+        fecha_hora
+        )
+        VALUES 
+        (
+        '$num_factura',
+        '$num_ticket',
+        '$numero_identificacion',
+        '$estado',
+        '$mensaje',
+        '$cufe',
+        '$rtaxxadocument',
+        '$fecha_actual'
+        )";
+        }
+        else{
+            $sql = "UPDATE resultados SET estado = '$estado' , cufe = '$cufe', fecha_hora = '$fecha_actual' ,  mensaje = '$mensaje' WHERE ticket = '$num_ticket'";
+        }
+
+        if (mysqli_query($conn, $sql)) {
+            $respuesta["estado"] = true;
+            $respuesta["mensaje"] = $mensaje;
+            $respuesta["cufe"] = $cufe;
+        } else {
+
+            $respuesta["estado"] = false;
+
+        }
+    } catch (PDOException $e) {
+        $respuesta["estado"] = false;
+        $respuesta["mensaje"] = $e->getMessage();
+    }
+    return $respuesta;
+
+}
+
+function validarFactura($cmd, $num_ticket): bool
+{
+    try {
+        $sql = "SELECT ticket FROM resultados WHERE ticket = :ticket";
+        $stmt = $cmd->prepare($sql);
+        $stmt->bindParam(':ticket', $num_ticket, PDO::PARAM_STR);
+        $stmt->execute();
+
+        if ($stmt->fetch()) {
+            return true;
+        } else {
+            return false;
+        }
+    } catch (PDOException $e) {
+        return false;
+    }
+}
+
+
 

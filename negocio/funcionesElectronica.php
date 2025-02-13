@@ -8,11 +8,11 @@ function guardarFactura($datos, $conn): array
 
     try {
         $id_tiquet = $datos["id_tiquet"];
-        $fecha_tiquet = $datos["fecha_tiquet"];
+        $fecha_tiquet =  '$datos["fecha_tiquet"]';
         $hora_tiquet = $datos["horatiquet"];
         $total = (float) $datos["total"];
         $bi = (float) $datos["bi"];
-        $id_modo_pago = mysqli_real_escape_string($conn, $datos["id_modo_pago"]);
+       $id_modo_pago =  devolverFormapago($datos["id_modo_pago"]);
         $id_camarero = mysqli_real_escape_string($conn, $datos["id_camarero"]);
         $cod_cliente = 222222222222;
         $caja = 1;
@@ -27,9 +27,7 @@ function guardarFactura($datos, $conn): array
             return $respuesta;
         }
 
-        mysqli_stmt_bind_param($stmt, "iissdssss", $id_tiquet, $fecha_tiquet, $hora_tiquet, $cod_cliente, $caja, $total, $id_modo_pago, $bi, $id_camarero);
-
-        $ejecucion = mysqli_stmt_execute($stmt);
+        mysqli_stmt_bind_param($stmt, "iissdssss", $id_tiquet, $fecha_tiquet, $hora_tiquet, $cod_cliente, $caja, $total, $id_modo_pago, $bi, $id_camarero);   $ejecucion = mysqli_stmt_execute($stmt);
 
         if ($ejecucion) {
             $respuesta["estado"] = true;
@@ -99,3 +97,21 @@ function guardarDetallesFactura($detalesFactura, $conn)
     return $respuesta;
 }
 
+function devolverFormapago($formadePAgo)
+{
+   switch ($formadePAgo) {
+      case "01":
+         return 10;
+      case "02":
+      case "03":
+         return 49;
+      case "04":
+      case "05":
+      case "06":
+         return 47;
+      case "07":
+         return 48;
+      default:
+         return 'ZZZ';
+   }
+}

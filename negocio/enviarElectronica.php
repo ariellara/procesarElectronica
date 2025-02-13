@@ -15,7 +15,7 @@ function enviarFacturaElectronica($conn, $numeroFactura, $cmd): array
         $datosEmpresaclean = retornarDatosempresa($cmd);
         $datosFacturaelectronicaclean = devolverDatoselectronica($cmd);
         $obtenerCliente = obtenerCliente($cmd, $num_ticket);
-        $fechaformato = $obtenerCliente['fecha'] . "T" . $obtenerCliente['hora'];
+        $fechaformato = $fechaActual . "T" . $obtenerCliente['hora'];
 
         $numero_identificacion = $obtenerCliente['identificacion'];
         $numero_f = $obtenerCliente['numero_f'];
@@ -167,7 +167,7 @@ function enviarFacturaElectronica($conn, $numeroFactura, $cmd): array
             'sauthorizationprefix' => $datosFacturaelectronicaclean[6],
             'sdocumentsuffix' => $num_factura,
             'tissuedate' => $fechaformato,
-            'tduedate' => $obtenerCliente['fecha'], //$fechaformato
+            'tduedate' => $fechaActual, //$fechaformato
             'wpaymentmeans' => '1', //1:Contado;2:Credito
             'wpaymentmethod' => $obtenerCliente['forma_pago'], //10:Efectivo
             'wbusinessregimen' => '1', //1=Persona Juridica;2=Persona Natural
@@ -222,8 +222,9 @@ function enviarFacturaElectronica($conn, $numeroFactura, $cmd): array
             'iNonce' => $iNonce,
             'jApi' => $jApi
         );
-       
+
         json_encode($factura);
+        file_put_contents("json.txt", json_encode($factura));
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -232,14 +233,17 @@ function enviarFacturaElectronica($conn, $numeroFactura, $cmd): array
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $resfac = curl_exec($ch);//Envio de la factura 
 
-    
-
         $resultado = json_decode($resfac, true);
+        if ($resultado == null) {
+            $respuesta['mensaje'] = "No hay conexión a la pasarella";
+            $respuesta['estado'] = false;
 
-
-
-
-
+        }
+        actualizarFactura($conn, $num_factura, $num_ticket, $control_actualizar);
+        $resultadosFin = insertarResultados($cmd, $conn, $numero_identificacion, $num_factura, $num_ticket, $resultado);
+        $respuesta["mensaje"] = $resultadosFin["mensaje"];
+        $respuesta["estado"] = $resultadosFin["estado"];
+        $respuesta["cufe"] = $resultadosFin["cufe"];
 
 
     } catch (Exception $e) {
