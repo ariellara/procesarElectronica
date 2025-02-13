@@ -36,6 +36,8 @@ include("../conexion/conexion.php");
                         <th>Ticket</th>
                         <th>Fecha</th>
                         <th>Estado</th>
+                        <th>Descripcion</th>
+                        <th>Ver</th>
                         <th>Enviar</th>
                     </tr>
                 </thead>
@@ -50,7 +52,7 @@ include("../conexion/conexion.php");
 
         <!-- Pie de página -->
         <div class="footer">
-            &copy; <?php print date("Y-mm-dd") . "-" . "Desarrollo independiente"; ?>
+            &copy; <?php print date("Y-m-d") . "-" . "Desarrollo independiente"; ?>
         </div>
     </div>
    

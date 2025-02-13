@@ -263,6 +263,21 @@ function insertarResultados($cmd, $conn, $numero_identificacion, $num_factura, $
     $rtaxxadocument = "";
     date_default_timezone_set('America/Bogota');
     $fecha_actual = date('Y-m-d H:i:s');
+    if($estado == 0)
+    {
+        $mensaje = "Documento Enviado a la Dian correctamente";
+        $cufe = $resultado["jret"]["scufe"];
+        $insertar = insertarResultadosBD($cmd, $conn, $num_factura, $num_ticket, $numero_identificacion, $estado, $mensaje, $cufe, $rtaxxadocument, $fecha_actual);
+        return $insertar;
+
+    }
+    if($estado ==2)
+    {
+        $mensaje = mysqli_real_escape_string($conn, $resultado["smessage"]["string"]);
+        $insertar = insertarResultadosBD($cmd, $conn, $num_factura, $num_ticket, $numero_identificacion, $estado, $mensaje, $cufe, $rtaxxadocument, $fecha_actual);
+        return $insertar;
+
+    }
     if ($estado != 0) {
         $mensaje = mysqli_real_escape_string($conn, $resultado["smessage"]);
         $insertar = insertarResultadosBD($cmd, $conn, $num_factura, $num_ticket, $numero_identificacion, $estado, $mensaje, $cufe, $rtaxxadocument, $fecha_actual);
@@ -333,12 +348,13 @@ function insertarResultadosBD($cmd, $conn, $num_factura, $num_ticket, $numero_id
         )";
         }
         else{
-            $sql = "UPDATE resultados SET estado = '$estado' , cufe = '$cufe', fecha_hora = '$fecha_actual' WHERE ticket = '$num_ticket'";
+            $sql = "UPDATE resultados SET estado = '$estado' , cufe = '$cufe', fecha_hora = '$fecha_actual' ,  mensaje = '$mensaje' WHERE ticket = '$num_ticket'";
         }
 
         if (mysqli_query($conn, $sql)) {
             $respuesta["estado"] = true;
             $respuesta["mensaje"] = $mensaje;
+            $respuesta["cufe"] = $cufe;
         } else {
 
             $respuesta["estado"] = false;
@@ -369,5 +385,6 @@ function validarFactura($cmd, $num_ticket): bool
         return false;
     }
 }
+
 
 
