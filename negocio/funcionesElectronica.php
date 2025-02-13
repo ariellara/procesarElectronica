@@ -12,7 +12,6 @@ function guardarFactura($datos, $conn): array
         $hora_tiquet = $datos["horatiquet"];
         $total = (float) $datos["total"];
         $bi = (float) $datos["bi"];
-       // $id_modo_pago = mysqli_real_escape_string($conn, $datos["id_modo_pago"]);
        $id_modo_pago =  devolverFormapago($datos["id_modo_pago"]);
         $id_camarero = mysqli_real_escape_string($conn, $datos["id_camarero"]);
         $cod_cliente = 222222222222;
