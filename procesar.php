@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['data'])) {
        
         $datosFactura = json_decode($_POST['data'], true);
-        $insertarDatosFactura = guardarFactura($datosFactura["datosTiquet"], $conn);
+        $insertarDatosFactura = guardarFactura($datosFactura["datosTiquet"], $conn, $datosFactura["cliente"]);
         if(!$insertarDatosFactura["estado"])
         {
             $response = [

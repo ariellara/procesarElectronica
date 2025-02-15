@@ -1,6 +1,6 @@
 <?php
 
-function guardarFactura($datos, $conn): array
+function guardarFactura($datos, $conn, $cliente): array
 {
     $respuesta = [];
     $respuesta["estado"] = false;
@@ -14,7 +14,7 @@ function guardarFactura($datos, $conn): array
         $bi = (float) $datos["bi"];
         $id_modo_pago = devolverFormapago($datos["id_modo_pago"]);
         $id_camarero = mysqli_real_escape_string($conn, $datos["id_camarero"]);
-        $cod_cliente = 222222222222;
+        $cod_cliente = $cliente;
         $caja = 1;
 
         $sql = "INSERT INTO facturas (num_ticket, fecha, fecha_hora, cod_cliente, caja, pago_realizado, forma_pago, bi, cajero)

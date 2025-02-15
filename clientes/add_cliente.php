@@ -19,6 +19,10 @@ $pagina_actual = isset($_GET['pagina']) ? intval($_GET['pagina']) : 1;
 	<td>
 
 		<h1 class="page-header">
+        <span class="pull-right">
+            </span class= "pull-left">
+            Gestión de Clientes
+            </span>
 			<span class="pull-right">
 
 				<a href="new_cliente.php" class="btn btn-success" >Nuevo Cliente</a>
@@ -32,7 +36,7 @@ $pagina_actual = isset($_GET['pagina']) ? intval($_GET['pagina']) : 1;
 					<th data-options="field:'Identificación',width:100">Identificación</th>
 					<th data-options="field:'Nombre',width:250">Nombre</th>
 					<th data-options="field:'Email',width:180">Email</th>
-					<th data-options="field:'editar',width:60"> Editar</th>
+					<th data-options="field:'editar',width:60"></th>
 					<th data-options="field:'accion',width:60"> Eliminar</th>
 
 				</tr>
