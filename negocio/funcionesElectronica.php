@@ -77,7 +77,7 @@ function guardarDetallesFactura($detalesFactura, $conn)
             $ipc = $item["avgiva"];
             
             if (!mysqli_stmt_execute($stmt)) {
-                throw new Exception("Error al insertar detalle: " . mysqli_stmt_error($stmt));
+                throw new \Exception("Error al insertar detalle: " . mysqli_stmt_error($stmt));
             }
         }
 

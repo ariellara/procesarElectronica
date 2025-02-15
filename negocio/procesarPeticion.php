@@ -1,4 +1,4 @@
-<!-- Desarrollado pora Ariel lara -->
+
 <?php
 include("enviarElectronica.php");
 include("../conexion/conexion.php");
