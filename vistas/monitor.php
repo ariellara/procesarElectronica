@@ -1,5 +1,17 @@
 <?php include('funcionesMonitor.php');
 include("../conexion/conexion.php");
+$fecha_hoy = date('Y-m-d');
+
+// Verificar si se ha enviado el formulario con filtros de fecha
+if (isset($_POST['fecha_inicio']) && isset($_POST['fecha_fin'])) {
+    // Si hay parámetros de fecha, usar esas fechas para la consulta
+    $fecha_inicio = $_POST['fecha_inicio'];
+    $fecha_fin = $_POST['fecha_fin'];
+    $factura->traerFacturas($conn, $fecha_inicio, $fecha_fin);
+} else {
+    // Si no se ha enviado filtro, cargar las facturas del día
+    $factura->traerFacturas($conn, $fecha_hoy, $fecha_hoy);
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">

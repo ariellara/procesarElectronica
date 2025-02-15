@@ -4,7 +4,7 @@ class Factura
 {
     public function __construct() {}
 
-    public function traerFacturas($conn)
+    public function traerFacturas($conn, $fecha_inicio, $fecha_fin)
     {
         $sql = "SELECT r.num_factura, r.ticket, r.cliente, r.estado, r.fecha_hora, r.mensaje, r.cufe FROM resultados r";
 

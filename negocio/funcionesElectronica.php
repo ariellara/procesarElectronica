@@ -8,36 +8,26 @@ function guardarFactura($datos, $conn, $cliente): array
 
     try {
         $id_tiquet = $datos["id_tiquet"];
-        $fecha_tiquet = '$datos["fecha_tiquet"]';
         $hora_tiquet = $datos["horatiquet"];
+        $fecha = $datos["fecha_tiquet"];
         $total = (float) $datos["total"];
         $bi = (float) $datos["bi"];
         $id_modo_pago = devolverFormapago($datos["id_modo_pago"]);
         $id_camarero = mysqli_real_escape_string($conn, $datos["id_camarero"]);
         $cod_cliente = $cliente;
         $caja = 1;
-
-        $sql = "INSERT INTO facturas (num_ticket, fecha, fecha_hora, cod_cliente, caja, pago_realizado, forma_pago, bi, cajero)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-        $stmt = mysqli_prepare($conn, $sql);
-
-        if ($stmt === false) {
-            $respuesta["mensaje"] = "Error al preparar la consulta: " . mysqli_error($conn);
-            return $respuesta;
-        }
-
-        mysqli_stmt_bind_param($stmt, "iissdssss", $id_tiquet, $fecha_tiquet, $hora_tiquet, $cod_cliente, $caja, $total, $id_modo_pago, $bi, $id_camarero);
-        $ejecucion = mysqli_stmt_execute($stmt);
-
-        if ($ejecucion) {
+        $sql = "INSERT INTO facturas
+                                    (num_ticket,fecha,fecha_hora,cod_cliente,caja,pago_realizado,forma_pago,bi, cajero) 
+                              VALUES('$id_tiquet', '$fecha', '$hora_tiquet', '$cod_cliente', '$caja', '$total', '$id_modo_pago', '$bi', '$id_camarero')";
+        if (mysqli_query($conn, $sql)) {
             $respuesta["estado"] = true;
-            $respuesta["mensaje"] = "Factura insertada correctamente";
-        } else {
-            $respuesta["mensaje"] = "Error al insertar la factura: " . mysqli_stmt_error($stmt);
+            $respuesta["mensaje"] = "Registro de facturas exitoso";
         }
-
-        mysqli_stmt_close($stmt);
+        else
+        {
+            $respuesta["mensaje"] = "no se registro la factura";
+        }                      
+        
 
     } catch (Exception $e) {
         $respuesta["mensaje"] = "Excepción: " . $e->getMessage();
