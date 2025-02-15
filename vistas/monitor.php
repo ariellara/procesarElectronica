@@ -9,22 +9,33 @@ include("../conexion/conexion.php");
     <link rel="stylesheet" href="../css/estilos.css">
     <script src="../js/negocio.js"></script>
     <script src="../js/jquery.min.js"></script>
-    </body>
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monitor de Enviós</title>
 </head>
 
 <body>
-    <div id="loadingOverlay" class = "loadingOverlay">
-    <img src= ../img/cargando.gif width='30' height='30'>
+    <div id="loadingOverlay" class="loadingOverlay">
+        <img src="../img/cargando.gif" width="30" height="30">
         Enviando...espere
     </div>
 
     <div class="container">
         <!-- Cabecera -->
         <div class="header">
-            Monitor de Enviós Factura Electrónica
+            Monitor de Envíos Factura Electrónica
+        </div>
+
+        <!-- Filtros de búsqueda (Campos de fechas y botón buscar) -->
+        <div class="header">
+            <form method="post">
+                <label for="fecha_inicio">Fecha Inicio:</label>
+                <input type="date" id="fecha_inicio" name="fecha_inicio" required>
+
+                <label for="fecha_fin">Fecha Fin:</label>
+                <input type="date" id="fecha_fin" name="fecha_fin" required>
+
+                <button type="submit" class="btn btn-primary">Buscar</button>
+            </form>
         </div>
 
         <!-- Tabla de Facturas -->
@@ -36,7 +47,7 @@ include("../conexion/conexion.php");
                         <th>Ticket</th>
                         <th>Fecha</th>
                         <th>Estado</th>
-                        <th>Descripcion</th>
+                        <th>Descripción</th>
                         <th>Ver</th>
                         <th>Enviar</th>
                     </tr>
@@ -55,7 +66,6 @@ include("../conexion/conexion.php");
             &copy; <?php print date("Y-m-d") . "-" . "Desarrollo independiente"; ?>
         </div>
     </div>
-   
 
 </body>
 
