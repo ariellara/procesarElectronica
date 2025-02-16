@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ];
             echo json_encode($response);
         }
-      //  $enviarFacturaElectronica = enviarFacturaElectronica($conn, $insertarDetallesFactura["numeroT"], $cmd);
+      $enviarFacturaElectronica = enviarFacturaElectronica($conn, $insertarDetallesFactura["numeroT"], $cmd);
 
         $response = [
             "estado" => 'success',

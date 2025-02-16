@@ -27,8 +27,6 @@ function guardarFactura($datos, $conn, $cliente): array
         {
             $respuesta["mensaje"] = "no se registro la factura";
         }                      
-        
-
     } catch (Exception $e) {
         $respuesta["mensaje"] = "Excepción: " . $e->getMessage();
     }

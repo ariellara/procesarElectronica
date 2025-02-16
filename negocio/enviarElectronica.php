@@ -2,6 +2,7 @@
 include('utilidadesElectronica.php');
 function enviarFacturaElectronica($conn, $numeroFactura, $cmd): array
 {
+    include('../conexion/credenciales.php');
     $respuesta = array();
     try {
 
@@ -177,11 +178,7 @@ function enviarFacturaElectronica($conn, $numeroFactura, $cmd): array
             'jbuyer' => $jbuyer,
             'jseller' => $jseller
         );
-        $ambiente = 2;
-        $sEmail = 'demo@taxxa.co';
-        $sPass = 'Demo2022*';
-        $url = 'https://api.taxxa.co:81/api.djson?demo1';
-
+       
         $jParams = array(
             'sEmail' => $sEmail,
             'sPass' => $sPass,

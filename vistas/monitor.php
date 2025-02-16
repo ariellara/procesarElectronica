@@ -1,17 +1,7 @@
 <?php include('funcionesMonitor.php');
 include("../conexion/conexion.php");
+include("../conexion/credenciales.php");
 $fecha_hoy = date('Y-m-d');
-
-// Verificar si se ha enviado el formulario con filtros de fecha
-if (isset($_POST['fecha_inicio']) && isset($_POST['fecha_fin'])) {
-    // Si hay parámetros de fecha, usar esas fechas para la consulta
-    $fecha_inicio = $_POST['fecha_inicio'];
-    $fecha_fin = $_POST['fecha_fin'];
-    $factura->traerFacturas($conn, $fecha_inicio, $fecha_fin);
-} else {
-    // Si no se ha enviado filtro, cargar las facturas del día
-    $factura->traerFacturas($conn, $fecha_hoy, $fecha_hoy);
-}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -32,12 +22,11 @@ if (isset($_POST['fecha_inicio']) && isset($_POST['fecha_fin'])) {
     </div>
 
     <div class="container">
-        <!-- Cabecera -->
+  
         <div class="header">
             Monitor de Envíos Factura Electrónica
         </div>
 
-        <!-- Filtros de búsqueda (Campos de fechas y botón buscar) -->
         <div class="header">
             <form method="post">
                 <label for="fecha_inicio">Fecha Inicio:</label>
@@ -50,7 +39,6 @@ if (isset($_POST['fecha_inicio']) && isset($_POST['fecha_fin'])) {
             </form>
         </div>
 
-        <!-- Tabla de Facturas -->
         <div class="table-container">
             <table>
                 <thead>
@@ -58,7 +46,6 @@ if (isset($_POST['fecha_inicio']) && isset($_POST['fecha_fin'])) {
                         <th>Número de Factura</th>
                         <th>Ticket</th>
                         <th>Fecha</th>
-                        <th>Estado</th>
                         <th>Descripción</th>
                         <th>Ver</th>
                         <th>Enviar</th>
@@ -66,16 +53,21 @@ if (isset($_POST['fecha_inicio']) && isset($_POST['fecha_fin'])) {
                 </thead>
                 <tbody>
                     <?php
-                    $factura = new Factura();
-                    $factura->traerFacturas($conn);
+                     $factura = new Factura();
+                    if (isset($_POST['fecha_inicio']) && isset($_POST['fecha_fin'])) {
+    
+                        $fecha_inicio = $_POST['fecha_inicio'];
+                        $fecha_fin = $_POST['fecha_fin'];
+                        $factura->traerFacturas($conn, $fecha_inicio, $fecha_fin);
+                    } else {
+                        $factura->traerFacturas($conn, $fecha_hoy, $fecha_hoy);
+                    }
                     ?>
                 </tbody>
             </table>
         </div>
-
-        <!-- Pie de página -->
         <div class="footer">
-            &copy; <?php print date("Y-m-d") . "-" . "Desarrollo independiente"; ?>
+            &copy; <?php  print date("Y-m-d") . "-" . "Licencia Otorgada a:";  print $licencia ?>
         </div>
     </div>
 

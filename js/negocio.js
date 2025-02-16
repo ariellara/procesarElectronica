@@ -12,7 +12,7 @@ function enviarFactura(factura) {
         .then(data => {
             
             if (data.success) {
-                alert("Factura enviada correctamente");
+                alert(data.message);
                 window.location.href ="../vistas/monitor.php";
             } else {
                 alert("Hubo un problema al enviar la factura");
