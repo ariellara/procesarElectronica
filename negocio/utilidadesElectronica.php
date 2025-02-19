@@ -214,8 +214,6 @@ function retornaDatosCliente($cmd, $res_fiscal, $regimen, $tributo)
     $sqlTributo = "SELECT codigo, significado from  fac_e_tipo_tributo where  id_tributo = $tributo";
     $rs = $cmd->query($sqlTributo);
     $obj_tributo = $rs->fetch();
-
-
     $datosE[0] = $obj_responsabilidadFiscal['codigo'];//codigo de R-99-PN 	
     $datosE[1] = $obj_responsabilidadFiscal['significado'];//No aplica-Otros
     $datosE[2] = $obj_regimenfiscal['codigo'];// 	49 	

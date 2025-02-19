@@ -34,8 +34,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             "mensaje" => $enviarFacturaElectronica['mensaje'],
             "cufe" => $enviarFacturaElectronica['cufe']
         ];
-        mysqli_close($conn);
-        $cmd = null;
+       // mysqli_close($conn);
+       // $cmd = null;
         echo json_encode($response);
     }
     else{

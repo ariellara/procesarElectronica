@@ -2,7 +2,6 @@
 include('utilidadesElectronica.php');
 function enviarFacturaElectronica($conn, $numeroFactura, $cmd): array
 {
-    include('../conexion/credenciales.php');
     $respuesta = array();
     try {
 
@@ -178,7 +177,11 @@ function enviarFacturaElectronica($conn, $numeroFactura, $cmd): array
             'jbuyer' => $jbuyer,
             'jseller' => $jseller
         );
-       
+        $ambiente = 2;
+        $sEmail = 'demo@taxxa.co';
+        $sPass = 'Demo2022*';
+        $url = 'https://api.taxxa.co:81/api.djson?demo1';
+
         $jParams = array(
             'sEmail' => $sEmail,
             'sPass' => $sPass,
@@ -233,16 +236,15 @@ function enviarFacturaElectronica($conn, $numeroFactura, $cmd): array
         $resultado = json_decode($resfac, true);
         if ($resultado == null) {
             $respuesta['mensaje'] = "No hay conexión a la pasarella";
-            $respuesta['estado'] = false;
+             $respuesta['estado'] = false;
 
-        }
-        actualizarFactura($conn, $num_factura, $num_ticket, $control_actualizar);
-        $resultadosFin = insertarResultados($cmd, $conn, $numero_identificacion, $num_factura, $num_ticket, $resultado);
-        $respuesta["mensaje"] = $resultadosFin["mensaje"];
-        $respuesta["estado"] = $resultadosFin["estado"];
-        $respuesta["cufe"] = $resultadosFin["cufe"];
-
-
+         }
+         actualizarFactura($conn, $num_factura, $num_ticket, $control_actualizar);
+         $resultadosFin = insertarResultados($cmd, $conn, $numero_identificacion, $num_factura, $num_ticket, $resultado);
+         $respuesta["mensaje"] = $resultadosFin["mensaje"];
+         $respuesta["estado"] = $resultadosFin["estado"];
+         $respuesta["cufe"] = $resultadosFin["cufe"];
+       
     } catch (Exception $e) {
         $respuesta["mensaje"] = $e->getMessage();
         $respuesta["estado"] = false;

@@ -63,8 +63,8 @@ include('../conexion/conexion.php');
                                 <label for="tipoIdentificacion">Tipo de Documento:</label>
                                 <select class="easyui-select" style="width:100%" id="tipoIdentificacion">
                                     <option value="">Seleccione</option>
-                                    <option value="13">Cedula</option>
-                                    <option value="31">Nít</option>
+                                    <option value="CC">Cedula</option>
+                                    <option value="NIT">Nít</option>
                                 </select>
                             </div>
                             <div class="form-group">

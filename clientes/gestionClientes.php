@@ -53,9 +53,9 @@ if ($accion == "nuevo") {
            '$email',
            '$identificacion',
            '$tipo_p',
-           '$retornarResFiscar',
-           '$retornarResRegimen',
-           '$tributodev',
+           '$res_fiscal',
+           '$res_regimen',
+           '$tributo',
            '$tipoIdentificacion'
             )";
         $result = mysqli_query($conn, $sql);
