@@ -21,7 +21,7 @@ class Factura
                     $enviar = "<img src= ../img/cargando.gif width='30' height='30' style = display:none id=enviando><a href = #  onclick = enviarFactura($row[1])><img src='../img/enviar.png' width='25' height='20'></a>";
                 }
                 if (!empty($row[6])) {
-                    $cufe = " <a href = https://api.taxxa.co/documentGet_pdf.dhtml?hash=$row[6] target=_blank >Ver </a>";
+                    $cufe = " <a href = https://api.taxxa.co/documentGet.dhtml?hash=$row[6] target=_blank >Ver </a>";
 
                 }
                 print "<tr><td>$row[0]</td><td>$row[1]</td><td>$row[4]</td><td>$row[5]</td><td>$cufe<td>$enviar</td></tr>";
