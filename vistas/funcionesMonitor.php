@@ -30,4 +30,62 @@ class Factura
             echo "Error en la consulta: " . mysqli_error($conn);
         }
     }
+
+    public function obtenerSumatoriaPorFormaPago($conexion)
+    {
+        $query = "
+            SELECT 
+                forma_pagoaux,
+                SUM(pago_realizado) AS total_pago
+            FROM 
+                facturas
+            WHERE
+                DATE(fecha) = CURDATE()
+            GROUP BY 
+                forma_pagoaux";
+
+        $resultado = mysqli_query($conexion, $query);
+        $resultados = array();
+
+        if ($resultado) {
+            while ($row = mysqli_fetch_assoc($resultado)) {
+                $resultados[$row['forma_pagoaux']] = $row['total_pago'];
+            }
+        }
+
+        return $resultados;
+    }
+
+    public function devolverPagoFormateado($tipoPago): string
+    {
+        $formatoPago = "";
+        switch ($tipoPago) {
+            case "01":
+                $formatoPago = "Efectivo";
+                break;
+            case "02":
+                $formatoPago = "Tarjeta Debito";
+                break;
+            case "03":
+                $formatoPago = "Datafono";
+                break;
+            case "04":
+                $formatoPago = "Nequi";
+                break;
+            case "05":
+                $formatoPago = "Tranferencia";
+                break;
+            case "06":
+                $formatoPago = "Daviplata";
+                break;
+            case "07";
+                $formatoPago = "Tarjeta Crédito";
+                break;
+            default:
+            $formatoPago ="Pago Desconocido";
+            break;    
+        }
+        return $formatoPago;
+    }
+
 }

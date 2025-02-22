@@ -223,9 +223,7 @@ function enviarFacturaElectronica($conn, $numeroFactura, $cmd): array
             'iNonce' => $iNonce,
             'jApi' => $jApi
         );
-
-        json_encode($factura);
-        file_put_contents("json.txt", json_encode($factura));
+       // file_put_contents("json.txt", json_encode($factura));
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_URL, $url);

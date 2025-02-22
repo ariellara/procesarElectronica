@@ -16,9 +16,10 @@ function guardarFactura($datos, $conn, $cliente): array
         $id_camarero = mysqli_real_escape_string($conn, $datos["id_camarero"]);
         $cod_cliente = $cliente;
         $caja = 1;
+        $modo_pago_suma= $datos["id_modo_pago"];
         $sql = "INSERT INTO facturas
-                                    (num_ticket,fecha,fecha_hora,cod_cliente,caja,pago_realizado,forma_pago,bi, cajero) 
-                              VALUES('$id_tiquet', '$fecha', '$hora_tiquet', '$cod_cliente', '$caja', '$total', '$id_modo_pago', '$bi', '$id_camarero')";
+                                    (num_ticket,fecha,fecha_hora,cod_cliente,caja,pago_realizado,forma_pago,bi, cajero, forma_pagoaux) 
+                              VALUES('$id_tiquet', '$fecha', '$hora_tiquet', '$cod_cliente', '$caja', '$total', '$id_modo_pago', '$bi', '$id_camarero', '$modo_pago_suma')";
         if (mysqli_query($conn, $sql)) {
             $respuesta["estado"] = true;
             $respuesta["mensaje"] = "Registro de facturas exitoso";

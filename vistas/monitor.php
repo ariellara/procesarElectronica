@@ -28,6 +28,7 @@ $fecha_hoy = date('Y-m-d');
         </div>
 
         <div class="header">
+           
             <form method="post">
                 <label for="fecha_inicio">Fecha Inicio:</label>
                 <input type="date" id="fecha_inicio" name="fecha_inicio" required>
@@ -37,7 +38,20 @@ $fecha_hoy = date('Y-m-d');
 
                 <button type="submit" class="btn btn-primary">Buscar</button>
             </form>
+           
         </div>
+        <?php
+            $factura = new Factura();
+            $sumatoria = 0;
+            $sumatoriaPorPago  =$factura->obtenerSumatoriaPorFormaPago($conn); 
+            foreach ($sumatoriaPorPago as $formaPago => $total) {
+                $sumatoria = $sumatoria + $total;
+                $pagoFormato = $factura->devolverPagoFormateado($formaPago);
+                echo "<font style='font-family: Consolas, monospace; font-size: 15px; color: #333; white-space: nowrap;'>$pagoFormato:$total|</span>";
+            }
+            echo "<span style='font-family: Consolas, monospace; font-size: 15px; color: #333; white-space: nowrap;'>Total del día: $sumatoria |</span>";
+
+            ?>
 
         <div class="table-container">
             <table>
@@ -53,7 +67,7 @@ $fecha_hoy = date('Y-m-d');
                 </thead>
                 <tbody>
                     <?php
-                     $factura = new Factura();
+                     
                     if (isset($_POST['fecha_inicio']) && isset($_POST['fecha_fin'])) {
     
                         $fecha_inicio = $_POST['fecha_inicio'];
