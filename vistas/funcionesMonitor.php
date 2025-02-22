@@ -8,23 +8,35 @@ class Factura
 
     public function traerFacturas($conn, $fecha_inicio, $fecha_fin)
     {
-        $sql = "SELECT r.num_factura, r.ticket, r.cliente, r.estado, r.fecha_hora, r.mensaje, r.cufe 
-        FROM resultados r
-        WHERE r.fecha >= '$fecha_inicio' and r.fecha <= '$fecha_fin'
-        ORDER BY r.fecha DESC";
+
+        $sql = "SELECT f.numero_fac_electronica, 
+                       f.num_ticket,
+                       r.fecha_hora,
+                       r.cufe , 
+                       c.razon_social,
+                       f.pago_realizado, 
+                       r.mensaje,
+                       r.estado
+                       from facturas f, resultados r, clientes c
+                where 
+                f.num_ticket = r.ticket
+                and 
+                f.cod_cliente = c.cod_cliente
+                and
+                r.fecha >= '$fecha_inicio' and r.fecha <= '$fecha_fin'
+                ORDER BY r.fecha DESC";
+                
         if ($result = mysqli_query($conn, $sql)) {
             while ($row = mysqli_fetch_row($result)) {
                 $enviar = "Enviado";
                 $cufe = "";
-
-                if ($row[3] != 0) {
+                if ($row[7] != 0) {
                     $enviar = "<img src= ../img/cargando.gif width='30' height='30' style = display:none id=enviando><a href = #  onclick = enviarFactura($row[1])><img src='../img/enviar.png' width='25' height='20'></a>";
                 }
-                if (!empty($row[6])) {
-                    $cufe = " <a href = https://api.taxxa.co/documentGet.dhtml?hash=$row[6] target=_blank >Ver </a>";
-
+                if (!empty($row[3])) {
+                    $cufe = " <a href = https://api.taxxa.co/documentGet.dhtml?hash=$row[3] target=_blank >Ver </a>";
                 }
-                print "<tr><td>$row[0]</td><td>$row[1]</td><td>$row[4]</td><td>$row[5]</td><td>$cufe<td>$enviar</td></tr>";
+                print "<tr><td>$row[0]</td><td>$row[1]</td><td>$row[2]</td><td>$row[6]</td><td>$row[4]</td><td> $$row[5]</td><td>$cufe<td>$enviar</td></tr>";
             }
         } else {
             echo "Error en la consulta: " . mysqli_error($conn);
@@ -82,8 +94,8 @@ class Factura
                 $formatoPago = "Tarjeta Crédito";
                 break;
             default:
-            $formatoPago ="Pago Desconocido";
-            break;    
+                $formatoPago = "Pago Desconocido";
+                break;
         }
         return $formatoPago;
     }

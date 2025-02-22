@@ -22,3 +22,31 @@ function enviarFactura(factura) {
             console.error('Error:', error);
         });
 }
+
+function informeZ()
+{
+    document.getElementById("tablaResultados").style.display = "none";
+    document.getElementById("informeZ").style.display = "block";
+
+}
+
+function generarInformeZ()
+{
+    fetch('../negocio/informeZ.php', {
+        method: 'POST',
+    })
+        .then(response => response.json())
+        .then(data => {
+            
+            if (data.success) {
+                
+              
+            } else {
+               
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    
+}

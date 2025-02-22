@@ -104,3 +104,17 @@ tr:hover {
     font-family: Arial, sans-serif;
     z-index: 9999; /* Asegurarse de que se muestre sobre todo */
 }
+
+
+    .informeZ {
+        padding: 20px;
+        border: 1px solid #ccc;
+        background-color: #f9f9f9;
+        width: 300px;
+        margin: 20px;
+    }
+
+ 
+   
+   
+
