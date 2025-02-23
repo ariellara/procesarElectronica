@@ -7,10 +7,17 @@ function generarInformeZ($conn): array
     try {
         $ultimoConsecutivo = obtenerUltimoConsecutivo($conn) + 1;
         $facturasSinCerrar = obtenerFacturasSinCerrar($conn);
+        if(empty($facturasSinCerrar["datos"]))
+        {
+            $respuesta["mensaje"] = "no hay datos";
+            return  $respuesta;
+
+        }
         $cerrarFacturas = cerrarFacturas($conn, $facturasSinCerrar["datos"], $ultimoConsecutivo);
         $construirInforme = construirInformeZ($facturasSinCerrar["datos"]);
         $guardarInformeZ = guardarInformeZ($conn, $construirInforme, $ultimoConsecutivo);
         $respuesta["mensaje"] = $guardarInformeZ["mensaje"];
+        
 
     } catch (\Exception $e) {
         $respuesta["mensaje"] = $e->getMessage();
