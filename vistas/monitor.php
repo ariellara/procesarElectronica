@@ -91,21 +91,8 @@ $fecha_hoy = date('Y-m-d');
                 <label for="fechaFin">Fecha Final:</label>
                 <input type="date" id="fechaFin" name="fechaFin" required>
                 <button onclick="traerInformes()">Buscar</button><br>
-                <div class="table-container">
-                    <table id="tablaResultados">
-                        <thead>
-                            <tr>
-                                <th>Id</th>
-                                <th>No Z</th>
-                                <th>Fecha</th>
-                                <th>Ver</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-
-                        </tbody>
-
-                    </table>
+                <div class="table-container" id="tablaResultadosInformeZ">
+                   
                 </div>
             </div>
             <div class="footer">

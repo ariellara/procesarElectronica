@@ -45,12 +45,12 @@ function generarInformeZ() {
                         document.getElementById('successMessage').style.display = 'none';
                     }, 1000);
                 }, 0);
-                
+
             } else {
                 alert(data.message);
             }
             document.getElementById('cargando').style.display = 'none';
-                document.getElementById('botonz').disabled = false;
+            document.getElementById('botonz').disabled = false;
 
         })
         .catch(error => {
@@ -59,7 +59,36 @@ function generarInformeZ() {
 
 }
 
-function traerInformes()
-{
-    alert('Informes nada aun');
+function traerInformes() {
+    let data = {
+        fecha_inicio: document.getElementById('fechaInicio').value,
+        fecha_fin: document.getElementById('fechaFin').value
+    };
+
+    fetch('../negocio/listadoInformeZ.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            let container = document.querySelector('#tablaResultadosInformeZ');
+            console.log('HTML recibido:', data.data); 
+            console.log(container);
+
+            if (container) {
+                container.innerHTML = data.data; 
+            } else {
+                console.error('No se encontró el contenedor para la tabla.');
+            }
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
 }
