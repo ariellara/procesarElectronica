@@ -5,11 +5,12 @@ function generarInformeZ($conn): array
     $respuesta = array();
     $respuesta["estado"] = true;
     try {
-        $ultimoConsecutivo = obtenerUltimoConsecutivo($conn)+1;
+        $ultimoConsecutivo = obtenerUltimoConsecutivo($conn) + 1;
         $facturasSinCerrar = obtenerFacturasSinCerrar($conn);
-      //  $cerrarFacturas = cerrarFacturas($conn, $facturasSinCerrar["datos"], $ultimoConsecutivo);
-        $construirInforme = construirInformeZ($facturasSinCerrar["datos"]);  
-        $respuesta["datos"] = $ultimoConsecutivo;
+        $cerrarFacturas = cerrarFacturas($conn, $facturasSinCerrar["datos"], $ultimoConsecutivo);
+        $construirInforme = construirInformeZ($facturasSinCerrar["datos"]);
+        $guardarInformeZ = guardarInformeZ($conn, $construirInforme, $ultimoConsecutivo);
+        $respuesta["mensaje"] = $guardarInformeZ["mensaje"];
 
     } catch (\Exception $e) {
         $respuesta["mensaje"] = $e->getMessage();
@@ -18,7 +19,30 @@ function generarInformeZ($conn): array
     return $respuesta;
 }
 
-function construirInformeZ($datosInforme): string
+function guardarInformeZ($conn, $datosInforme, $consecutivo_z): array
+{
+    $respuesta = array();
+    $respuesta["estado"] = true;
+    try {
+        $fecha = date("Y-m-d");
+        $datos = json_encode($datosInforme);
+        $sql = "INSERT INTO tb_informe_z (consecutivo,fecha,resultado)
+                       VALUES($consecutivo_z,'$fecha','$datos')";
+        $resultado = mysqli_query($conn, $sql);
+        if ($resultado) {
+            $respuesta["mensaje"] = "Informe Z generado y Guardado";
+        } else {
+            $respuesta["estado"] = false;
+            $respuesta["mensaje"] = "Informe Z  no generado ";
+        }
+    } catch (Exception $e) {
+        $respuesta["estado"] = false;
+        $respuesta["mensaje"] = $e->getMessage();
+    }
+    return $respuesta;
+
+}
+function construirInformeZ($datosInforme): array
 {
 
     $informe = array();
@@ -26,23 +50,21 @@ function construirInformeZ($datosInforme): string
     $cajeros = array();
     $totalVentas = 0;
     $sumatoriaPorCajero = [];
-    $sumatoriaPorTipoPago = []; 
-    $informe["primerMovimiento"]= $datosInforme[0]["fecha_hora"];
+    $sumatoriaPorTipoPago = [];
+    $informe["primerMovimiento"] = $datosInforme[0]["fecha_hora"];
     $ultimoRegistro = end($datosInforme);
-    $informe["ultimoMovimiento"]= $ultimoRegistro["fecha_hora"];
-    $informe["primerFactura"]= $datosInforme[0]["numero_fac_electronica"];
-    $informe["ultimaFactura"]= $ultimoRegistro["numero_fac_electronica"];
-    $informe["ventas"]= count($datosInforme);
-    foreach($datosInforme as $item)
-    {
-        $totalVentas += $item["pago_realizado"] ;
+    $informe["ultimoMovimiento"] = $ultimoRegistro["fecha_hora"];
+    $informe["primerFactura"] = $datosInforme[0]["numero_fac_electronica"];
+    $informe["ultimaFactura"] = $ultimoRegistro["numero_fac_electronica"];
+    $informe["ventas"] = count($datosInforme);
+    foreach ($datosInforme as $item) {
+        $totalVentas += $item["pago_realizado"];
         $formasPagos[] = devolverPagoFormateado($item["forma_pagoaux"]);
         $cajeros[] = $item["cajero"];
     }
     $cajeros = array_unique($cajeros);
     $formasPagos = array_unique($formasPagos);
-    foreach($datosInforme as $item)
-    {
+    foreach ($datosInforme as $item) {
         $cajero = $item["cajero"];
         $pago = $item["pago_realizado"];
         if (isset($sumatoriaPorCajero[$cajero])) {
@@ -54,8 +76,7 @@ function construirInformeZ($datosInforme): string
             ];
         }
     }
-    foreach($datosInforme as $item)
-    {
+    foreach ($datosInforme as $item) {
         $tipoPago = $item["forma_pagoaux"];
         $pago = $item["pago_realizado"];
         if (isset($sumatoriaPorTipoPago[$tipoPago])) {
@@ -67,12 +88,11 @@ function construirInformeZ($datosInforme): string
             ];
         }
     }
-    $informe["total"]= $totalVentas;
-    $informe["empleados"]= $sumatoriaPorCajero;
-    $informe["impuestos"]= "";
-    $informe["formaspago"]= $sumatoriaPorTipoPago;
-
-    return json_encode($informe);
+    $informe["total"] = $totalVentas;
+    $informe["empleados"] = $sumatoriaPorCajero;
+    $informe["impuestos"] = ($totalVentas / 1.08);
+    $informe["formaspago"] = $sumatoriaPorTipoPago;
+    return $informe;
 
 }
 
@@ -81,7 +101,7 @@ function cerrarFacturas($conn, $facturasSinCerrar, $consecutivo_z)
     $respuesta = array();
     $respuesta["estado"] = true;
     try {
-        foreach ($facturasSinCerrar as $item){
+        foreach ($facturasSinCerrar as $item) {
             $id = $item["num_ticket"];
             $sql = "UPDATE facturas SET consecutivo_z = '$consecutivo_z' WHERE num_ticket = '$id'";
             $resultado = mysqli_query($conn, $sql);
@@ -134,7 +154,6 @@ function obtenerFacturasSinCerrar($conn): array
     return $respuesta;
 }
 
-
 function obtenerUltimoConsecutivo($conexion)
 {
     $query = "SELECT consecutivo_z FROM facturas WHERE consecutivo_z != 0 ORDER BY consecutivo_z DESC LIMIT 1";
@@ -148,34 +167,46 @@ function obtenerUltimoConsecutivo($conexion)
     }
 }
 
- function devolverPagoFormateado($tipoPago): string
-    {
-        $formatoPago = "";
-        switch ($tipoPago) {
-            case "01":
-                $formatoPago = "Efectivo";
-                break;
-            case "02":
-                $formatoPago = "Tarjeta Debito";
-                break;
-            case "03":
-                $formatoPago = "Datafono";
-                break;
-            case "04":
-                $formatoPago = "Nequi";
-                break;
-            case "05":
-                $formatoPago = "Tranferencia";
-                break;
-            case "06":
-                $formatoPago = "Daviplata";
-                break;
-            case "07";
-                $formatoPago = "Tarjeta Crédito";
-                break;
-            default:
-                $formatoPago = "Pago Desconocido";
-                break;
-        }
-        return $formatoPago;
+function devolverPagoFormateado($tipoPago): string
+{
+    $formatoPago = "";
+    switch ($tipoPago) {
+        case "01":
+            $formatoPago = "Efectivo";
+            break;
+        case "02":
+            $formatoPago = "Tarjeta Debito";
+            break;
+        case "03":
+            $formatoPago = "Datafono";
+            break;
+        case "04":
+            $formatoPago = "Nequi";
+            break;
+        case "05":
+            $formatoPago = "Tranferencia";
+            break;
+        case "06":
+            $formatoPago = "Daviplata";
+            break;
+        case "07";
+            $formatoPago = "Tarjeta Crédito";
+            break;
+        default:
+            $formatoPago = "Pago Desconocido";
+            break;
     }
+    return $formatoPago;
+}
+
+function traerInformeZ($conn, $fecha_inicio, $fecha_fin)
+{
+    $sql = "SELECT Id, consecutivo, fecha FROM tb_informe_z 
+    WHERE fecha BETWEEN ? AND ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ss", $fecha_inicio, $fecha_fin); // 'ss' para strings
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+
+}
