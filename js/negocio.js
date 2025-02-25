@@ -30,6 +30,8 @@ function informeZ() {
 }
 
 function generarInformeZ() {
+    const confirmarGenerarInforme = confirm("¿Estás seguro de que deseas generar el informe?");
+    if (confirmarGenerarInforme) {
     document.getElementById('cargando').style.display = 'inline-block';
     document.getElementById('botonz').disabled = true;
     fetch('../negocio/informeZ.php', {
@@ -56,6 +58,7 @@ function generarInformeZ() {
         .catch(error => {
             console.error('Error:', error);
         });
+    }
 
 }
 
