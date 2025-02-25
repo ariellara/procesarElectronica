@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <td>{$informe['Id']}</td>
                     <td>{$informe['consecutivo']}</td>
                     <td>{$informe['fecha']}</td>
-                    <td><a href='../detallesInforme.php?id={$informe['Id']}' target='_blank'>Ver</a></td>
+                    <td><a href='detallesInforme.php?id={$informe['consecutivo']}' target='_blank'>Ver</a></td>
                   </tr>";
     }
     $html .= '</tbody></table>';

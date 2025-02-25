@@ -207,9 +207,78 @@ function traerInformeZ($conn, $fecha_inicio, $fecha_fin)
     $sql = "SELECT Id, consecutivo, fecha FROM tb_informe_z 
     WHERE fecha BETWEEN ? AND ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ss", $fecha_inicio, $fecha_fin); // 'ss' para strings
+    $stmt->bind_param("ss", $fecha_inicio, $fecha_fin);
     $stmt->execute();
     $result = $stmt->get_result();
+}
 
+function consultarDatosEmpresa($conn): array
+{
+    $respuesta = array();
+    $respuesta["estado"] = true;
+    try {
+        $sql = "SELECT  razonSocial, direccion, nit FROM datos_empresa";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $respuesta["datos"] = $row;
+            }
+        } else {
+            $respuesta["estado"] = false;
+            $respuesta["mensaje"] = "No se encontraron datos de la empresa.";
+        }
+        $stmt->close();
+    } catch (PDOException $e) {
+        $respuesta["mensaje"] = $e->getMessage();
+        $respuesta["estado"] = false;
+    }
+    return $respuesta;
+}
 
+function consultarInformeZ($conn, $numeroZ): array
+{
+    $respuesta = array();
+    $respuesta["estado"] = true;
+    try {
+        $sql = "SELECT resultado FROM tb_informe_z WHERE consecutivo = '$numeroZ'";
+        $result = $conn->query($sql);
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $respuesta["datos"] = $row["resultado"];
+        } else {
+            $respuesta["estado"] = false;
+            $respuesta["mensaje"] = "No se encontró un informe con el consecutivo proporcionado.";
+        }
+    } catch (mysqli_sql_exception $e) {
+        $respuesta["mensaje"] = $e->getMessage();
+        $respuesta["estado"] = false;
+    }
+    return $respuesta;
+}
+
+function consultarDatosElectronica($conn): array
+{
+    $respuesta = array();
+    $respuesta["estado"] = true;
+    try {
+        $sql = "SELECT  resolucion_dian, prefijo, n_fac_inicial, n_comprobante_final FROM tb_factura_electronica";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $respuesta["datos"] = $row;
+            }
+        } else {
+            $respuesta["estado"] = false;
+            $respuesta["mensaje"] = "No se encontraron datos de electronica.";
+        }
+        $stmt->close();
+    } catch (PDOException $e) {
+        $respuesta["mensaje"] = $e->getMessage();
+        $respuesta["estado"] = false;
+    }
+    return $respuesta;
 }
