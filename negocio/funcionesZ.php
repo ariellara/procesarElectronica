@@ -282,3 +282,25 @@ function consultarDatosElectronica($conn): array
     }
     return $respuesta;
 }
+
+function devolverNombreCajero($conn, $cajero)
+{
+    $respuesta = array();
+    $respuesta["estado"] = true;
+    try {
+        $sql = "SELECT nombre_cajero FROM cajeros WHERE cajero = '$cajero'";
+        $result = $conn->query($sql);
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $respuesta["datos"] = $row["nombre_cajero"];
+        } else {
+            $respuesta["estado"] = false;
+            $respuesta["mensaje"] = "Ningun Cajero.";
+        }
+    } catch (mysqli_sql_exception $e) {
+        $respuesta["mensaje"] = $e->getMessage();
+        $respuesta["estado"] = false;
+    }
+    return $respuesta;
+
+}

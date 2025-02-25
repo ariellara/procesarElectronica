@@ -35,9 +35,9 @@ $datosElectronica = $obtenerDatosE["datos"];
        <?php
         foreach ($datosInformeZ["empleados"] as $item)
         {
-            $empleado = $item["cajero"];
+            $empleado =  devolverNombreCajero($conn,$item["cajero"]);
             $total = $item["total"];
-            print "<br>".$empleado.".....................$".number_format($total,2);
+            print "<br>".$empleado["datos"].".....................$".number_format($total,2);
         }
         ?>
         </td></tr>
