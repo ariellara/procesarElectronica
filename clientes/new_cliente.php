@@ -145,8 +145,7 @@ include('../conexion/conexion.php');
                             <img id="cargando" src="../img/cargando.gif" height="25" width="25" style="display:none">
                             <input type="button" id="btnGuardar" class="btn btn-primary" value="Guardar"
                                 onclick="guardarCliente()">
-                            <input type="button" id="btnLimpiar" class="btn btn-primary" value="Limpiar"
-                                onclick="clearForm()">
+                           
                         </div>
                         <div>
                             <a href="add_cliente.php" class="btn btn-link" target="admin">Regresar</a>
