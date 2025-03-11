@@ -2,7 +2,7 @@
 include('utilidadesElectronica.php');
 function enviarFacturaElectronica($conn, $numeroFactura, $cmd): array
 {
-    $ambiente = 2;
+        $ambiente = 2;
         $sEmail = 'demo@taxxa.co';
         $sPass = 'Demo2022*';
         $url = 'https://api.taxxa.co:81/api.djson?demo1';
