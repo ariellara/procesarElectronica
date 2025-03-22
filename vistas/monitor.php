@@ -57,6 +57,7 @@ $fecha_hoy = date('Y-m-d');
                         <th>Descripción</th>
                         <th>Cliente</th>
                         <th>Valor</th>
+                        <th>Propina</th>
                         <th>Ver</th>
                         <th>Enviar</th>
                     </tr>
