@@ -2,10 +2,10 @@
 include('utilidadesElectronica.php');
 function enviarFacturaElectronica($conn, $numeroFactura, $cmd): array
 {
-        $ambiente = 2;
-        $sEmail = 'demo@taxxa.co';
-        $sPass = 'Demo2022*';
-        $url = 'https://api.taxxa.co:81/api.djson?demo1';
+    $ambiente = 2;
+    $sEmail = 'demo@taxxa.co';
+    $sPass = 'Demo2022*';
+    $url = 'https://api.taxxa.co:81/api.djson?demo1';
     $respuesta = array();
     try {
 
@@ -13,14 +13,11 @@ function enviarFacturaElectronica($conn, $numeroFactura, $cmd): array
         $num_ticket = $numeroFactura;
         $obtenerLineas = obtenerLineasDetalles($cmd, $num_ticket);
         $adocumentitems = obtenerjTax($obtenerLineas);
-        $datosEmpresa[] = array();
-        $datosFacturaelectronica[] = array();
         $datosCliente[] = array();
         $datosEmpresaclean = retornarDatosempresa($cmd);
         $datosFacturaelectronicaclean = devolverDatoselectronica($cmd);
         $obtenerCliente = obtenerCliente($cmd, $num_ticket);
         $fechaformato = $fechaActual . "T" . $obtenerCliente['hora'];
-
         $numero_identificacion = $obtenerCliente['identificacion'];
         $numero_f = $obtenerCliente['numero_f'];
         $final_fac = $obtenerCliente['final_fac'];
@@ -162,7 +159,17 @@ function enviarFacturaElectronica($conn, $numeroFactura, $cmd): array
             $num_factura = $numero_f;
             $control_actualizar = 0;
         }
-        //$num_factura = '21390'; 
+        $resultadoPropina =  obtenerPropina($cmd, $num_ticket);
+        $aallowancecharge = array();
+        $aallowancecharge[] = array(
+            
+                'schargeindicator' => 'true', 
+                'sallowancechargereason' => 'Propina',
+                'smultiplierfactornumeric' => 0.0, 
+                'namount' =>$resultadoPropina["propina"], 
+                'nbaseamount' => (float) $resultadoPropina["pago_realizado"]
+        
+        );
         $jDocument = array(
             'wdocumenttype' => 'Invoice',
             'wdocumentsubtype' => '9',
@@ -171,17 +178,18 @@ function enviarFacturaElectronica($conn, $numeroFactura, $cmd): array
             'sauthorizationprefix' => $datosFacturaelectronicaclean[6],
             'sdocumentsuffix' => $num_factura,
             'tissuedate' => $fechaformato,
-            'tduedate' => $fechaActual, //$fechaformato
-            'wpaymentmeans' => '1', //1:Contado;2:Credito
-            'wpaymentmethod' => $obtenerCliente['forma_pago'], //10:Efectivo
-            'wbusinessregimen' => '1', //1=Persona Juridica;2=Persona Natural
-            'woperationtype' => '10', /* 10: Operacion Estandar */
+            'tduedate' => $fechaActual, 
+            'wpaymentmeans' => '1', 
+            'wpaymentmethod' => $obtenerCliente['forma_pago'], 
+            'wbusinessregimen' => '1', 
+            'woperationtype' => '10', 
             'snoteTop' => 'Esta factura se asimila a una la Letra de Cambio (Según el artículo 774 C.C)',
             'adocumentitems' => $adocumentitems,
             'jbuyer' => $jbuyer,
-            'jseller' => $jseller
+            'jseller' => $jseller,
+            //'aallowancecharge' =>$aallowancecharge,
+            'snotebottom' => "Propina :$ ".$resultadoPropina["propina"]." Pesos"
         );
-        
 
         $jParams = array(
             'sEmail' => $sEmail,
@@ -223,7 +231,7 @@ function enviarFacturaElectronica($conn, $numeroFactura, $cmd): array
             'iNonce' => $iNonce,
             'jApi' => $jApi
         );
-       // file_put_contents("json.txt", json_encode($factura));
+        // file_put_contents("json.txt", json_encode($factura));
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -234,16 +242,16 @@ function enviarFacturaElectronica($conn, $numeroFactura, $cmd): array
 
         $resultado = json_decode($resfac, true);
         if ($resultado == null) {
-            $respuesta['mensaje'] = "No hay conexión a la pasarella";
-             $respuesta['estado'] = false;
+            $respuesta['mensaje'] = "Contacte al administrador!!";
+            $respuesta['estado'] = false;
 
-         }
-         actualizarFactura($conn, $num_factura, $num_ticket, $control_actualizar);
-         $resultadosFin = insertarResultados($cmd, $conn, $numero_identificacion, $num_factura, $num_ticket, $resultado);
-         $respuesta["mensaje"] = $resultadosFin["mensaje"];
-         $respuesta["estado"] = $resultadosFin["estado"];
-         $respuesta["cufe"] = $resultadosFin["cufe"];
-       
+        }
+        actualizarFactura($conn, $num_factura, $num_ticket, $control_actualizar);
+        $resultadosFin = insertarResultados($cmd, $conn, $numero_identificacion, $num_factura, $num_ticket, $resultado);
+        $respuesta["mensaje"] = $resultadosFin["mensaje"];
+        $respuesta["estado"] = $resultadosFin["estado"];
+        $respuesta["cufe"] = $resultadosFin["cufe"];
+
     } catch (Exception $e) {
         $respuesta["mensaje"] = $e->getMessage();
         $respuesta["estado"] = false;

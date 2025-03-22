@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['data'])) {
 
         $datosFactura = json_decode($_POST['data'], true);
-        $validarData = $datosTiquet["datosTiquet"];
+        $validarData = $datosFactura["datosTiquet"];
         if($validarData["id_tiquet"] == null)
         {
             $response = [
@@ -20,8 +20,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo json_encode($response);
             exit;
         }
+        $propina = 0;
+        if($datosFactura["aceptarPropina"] != "false")
+        {
+            $propina = $datosFactura["propina"];
 
-        $insertarDatosFactura = guardarFactura($datosFactura["datosTiquet"], $conn, $datosFactura["cliente"]);
+        }
+
+        $insertarDatosFactura = guardarFactura($datosFactura["datosTiquet"], $conn, $datosFactura["cliente"], $propina );
         if (!$insertarDatosFactura["estado"]) {
             $response = [
                 "estado" => 'error',
@@ -45,8 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo json_encode($response);
             exit;
         }
-        $enviarFacturaElectronica = enviarFacturaElectronica($conn, $insertarDetallesFactura["numeroT"], $cmd);
-
+       $enviarFacturaElectronica = enviarFacturaElectronica($conn, $insertarDetallesFactura["numeroT"], $cmd);
         $response = [
             "estado" => 'success',
             "mensaje" => $enviarFacturaElectronica['mensaje'],

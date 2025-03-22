@@ -1,6 +1,6 @@
 <?php
 
-function guardarFactura($datos, $conn, $cliente): array
+function guardarFactura($datos, $conn, $cliente, $propina): array
 {
     $respuesta = [];
     $respuesta["estado"] = false;
@@ -18,8 +18,8 @@ function guardarFactura($datos, $conn, $cliente): array
         $caja = 1;
         $modo_pago_suma= $datos["id_modo_pago"];
         $sql = "INSERT INTO facturas
-                                    (num_ticket,fecha,fecha_hora,cod_cliente,caja,pago_realizado,forma_pago,bi, cajero, forma_pagoaux) 
-                              VALUES('$id_tiquet', '$fecha', '$hora_tiquet', '$cod_cliente', '$caja', '$total', '$id_modo_pago', '$bi', '$id_camarero', '$modo_pago_suma')";
+                                    (num_ticket,fecha,fecha_hora,cod_cliente,caja,pago_realizado,forma_pago,bi, cajero, forma_pagoaux,propina) 
+                              VALUES('$id_tiquet', '$fecha', '$hora_tiquet', '$cod_cliente', '$caja', '$total', '$id_modo_pago', '$bi', '$id_camarero', '$modo_pago_suma','$propina')";
         if (mysqli_query($conn, $sql)) {
             $respuesta["estado"] = true;
             $respuesta["mensaje"] = "Registro de facturas exitoso";
