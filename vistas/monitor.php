@@ -24,6 +24,7 @@ $fecha_hoy = date('Y-m-d');
     <div class="container">
         <div class="header">
             Monitor de Envíos Factura Electrónica
+            
         </div>
         <div class="header">
             <form method="post">
@@ -38,6 +39,7 @@ $fecha_hoy = date('Y-m-d');
         <?php
         $factura = new Factura();
         $sumatoria = 0;
+        $estado = consultarEstadoMonitor($conn);
         $sumatoriaPorPago = $factura->obtenerSumatoriaPorFormaPago($conn);
         foreach ($sumatoriaPorPago as $formaPago => $total) {
             $sumatoria = $sumatoria + $total;
@@ -57,21 +59,20 @@ $fecha_hoy = date('Y-m-d');
                         <th>Descripción</th>
                         <th>Cliente</th>
                         <th>Valor</th>
-                        <th>Propina</th>
+                      <?php  if($estado == 0)print "<th>Propina</th>" ?>
                         <th>Ver</th>
                         <th>Enviar</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php
-
                     if (isset($_POST['fecha_inicio']) && isset($_POST['fecha_fin'])) {
 
                         $fecha_inicio = $_POST['fecha_inicio'];
                         $fecha_fin = $_POST['fecha_fin'];
-                        $factura->traerFacturas($conn, $fecha_inicio, $fecha_fin);
+                        $factura->traerFacturas($conn, $fecha_inicio, $fecha_fin, $estado);
                     } else {
-                        $factura->traerFacturas($conn, $fecha_hoy, $fecha_hoy);
+                        $factura->traerFacturas($conn, $fecha_hoy, $fecha_hoy, $estado);
                     }
 
                     ?>
@@ -98,9 +99,25 @@ $fecha_hoy = date('Y-m-d');
             </div>
             <div class="footer">
                 &copy; <?php print date("Y-m-d") . "-" . "Licencia Otorgada a:";
-                print $licencia ?>
+                print $licencia ?><br>
+                <a href = # onclick = "cambiarPresentacion()">Sysme</a>
             </div>
         </div>
 </body>
 
 </html>
+
+<?php
+
+function consultarEstadoMonitor($conn)
+    {
+        $estado = 0;
+        $sql = "select nit_res from tb_factura_electronica ";
+        if ($result = mysqli_query($conn, $sql)) {
+            while ($row = mysqli_fetch_row($result)) {
+                $estado = $row[0];
+            }
+        }
+        return $estado;
+    }
+?>

@@ -6,7 +6,7 @@ class Factura
     {
     }
 
-    public function traerFacturas($conn, $fecha_inicio, $fecha_fin)
+    public function traerFacturas($conn, $fecha_inicio, $fecha_fin, $estado)
     {
 
         $sql = "SELECT f.numero_fac_electronica, 
@@ -40,11 +40,14 @@ class Factura
                 if (!empty($row[3])) {
                     $cufe = " <a href = https://api.taxxa.co/documentGet.dhtml?hash=$row[3] target=_blank >Ver </a>";
                 }
-                print "<tr><td>$row[0]</td><td>$row[1]</td><td>$row[2]</td><td>$row[6]</td><td>$row[4]</td><td> $row[5]</td><td>$row[8]</td><td>$cufe<td>$enviar</td></tr>";
+                print "<tr><td>$row[0]</td><td>$row[1]</td><td>$row[2]</td><td>$row[6]</td><td>$row[4]</td><td> $row[5]</td>";
+                if($estado == 0)print "<td>$row[8]</td>"; 
+                print "<td>$cufe<td>$enviar</td></tr>";
             }
             $sumatoriaTotal = "$".number_format($sumatoriaTotal,2);
             $sumatoriaPrpinas = "$".number_format($sumatoriaPrpinas,2);
-            print "<tr><td colspan =2>Total Facturas</td><td>$sumatoriaTotal</td><td colspan =2></td colspan =2><td>Total Propinas</td><td Colspan=3>$sumatoriaPrpinas</td></tr>";
+            print "<tr><td colspan =2>Total Facturas</td><td>$sumatoriaTotal</td>";
+            if($estado == 0)print "<td colspan =2></td colspan =2><td>Total Propinas</td><td Colspan=3>$sumatoriaPrpinas</td></tr>";
         } else {
             echo "Error en la consulta: " . mysqli_error($conn);
         }
@@ -106,5 +109,7 @@ class Factura
         }
         return $formatoPago;
     }
+
+    
 
 }

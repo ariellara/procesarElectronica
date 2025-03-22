@@ -95,3 +95,28 @@ function traerInformes() {
         console.error('Error:', error);
     });
 }
+
+function cambiarPresentacion()
+{
+    let data = {datos:1};
+    fetch('../negocio/cambiarPresentacion.php', {
+        method: 'POST',
+    })
+        .then(response => response.json())
+        .then(data => {
+
+            if (data.success) {
+                window.location.href = "../vistas/monitor.php";
+
+            } else {
+                alert(data.message);
+            }
+          
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+
+
+
